@@ -6,8 +6,9 @@ export const usevMixStore = defineStore('vMixStore', {
   state: () => ({
     // url: "http://192.168.1.153:8088/", 
     // url: "http://192.168.50.200:8088/", 
-    // url: "http://169.254.31.146:8088/", 
-    url: "http://127.0.0.1:8088/", 
+    // url: "http://172.21.31.136:8088/", 
+    // url: "http://127.0.0.1:8088/", 
+    url: "http://localhost:8088/", 
     inicioPartida: null,
     cronoEnPrograma: false,
     crono: null,
@@ -65,6 +66,7 @@ export const usevMixStore = defineStore('vMixStore', {
       const dir = this.url +"API/?Function=SetText&Input=" + nombre + "&SelectedName=" + capa + ".Text&Value=" + encodeURIComponent(val ?? '')
       await axios.post(dir).catch(err => {
         console.log("Error de conexión " + err)
+        
       })
     },
     async liveUpdateCrono (nombre, capa, val) {

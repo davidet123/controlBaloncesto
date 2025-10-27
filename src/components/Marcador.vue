@@ -1,9 +1,22 @@
 <template>
+  <v-row>
+    {{ status }}
+  </v-row>
   <v-card
     color="blue-grey darken-4">
-    <!-- <v-card-title>
-      <h4>Marcador</h4>
-    </v-card-title> -->
+    <v-card-title>
+      <v-row>
+        <v-col class="d-flex justify-center align-center ga-2">
+          <p>CONEXION WEBSOCKET </p>
+          <v-icon
+           icon="mdi-circle-medium"
+           :color="status=== 'open' ? 'green' : 'red'"
+           size="small"
+           ></v-icon>
+        </v-col>
+
+      </v-row>
+    </v-card-title>
     <v-card-text>
       <v-row class="ma-0 pa-0">
         <v-col class="pa-0 ma-0 text-center" cols="6">
@@ -295,6 +308,8 @@
     autoFouls, autoGameClock, autoPeriod, autoScore, autoShotClock, foulsByPeriodAway, foulsByPeriodHome, 
     playersHome, playersAway, roster } = storeToRefs(wsDataStore)
 
+  const { status } = storeToRefs(wsDataStore) 
+
   const periodos = ['1', '2', '3', '4', 'OT', '2OT', '3OT', '4OT', '5OT']
   const periodoTXT = ref('1')
 
@@ -318,10 +333,13 @@
     
     if(team === 'RESET_LOCAL') {
       homeFouls.value -= foulsByPeriodHome.value[period.value -1]
+      resetFaltasVisual('LOC')
+      
       return
     }
     if(team === 'RESET_VISITANTE') {
       awayFouls.value -= foulsByPeriodAway.value[period.value -1]
+      resetFaltasVisual('VIS')
       return
     }
     
@@ -331,6 +349,12 @@
     } else if (team === 'VISITANTE') {
       awayFouls.value += val
       foulsByPeriodAway.value[period.value -1] += val
+    }
+  }
+
+  const resetFaltasVisual = equipo => {
+    for(let i = 1; i <= 5; i++) {
+      vMixStore.setImageVisible('MARCADOR', `FALTA_${equipo}_${i}`, false)
     }
   }
   
@@ -343,6 +367,7 @@
       wsDataStore.updateScore('away', score)
     }
   }
+
 
   watch(() => homeScore.value, (newVal, oldVal) => {
     // Calcular el valor de la canasta y actualizar el array scoreByPeriodHome
@@ -420,11 +445,11 @@
     const faltasEnEsteCuarto = parseInt(newVal) - previousFouls
 
     foulsByPeriodHome.value[numPeriodo] = faltasEnEsteCuarto
-    console.log(faltasEnEsteCuarto)
+    // console.log(faltasEnEsteCuarto)
 
 
 
-    for(let i = 1; i <= 5; i++) {
+    for(let i = faltasEnEsteCuarto; i <= 5; i++) {
       vMixStore.setImageVisible('MARCADOR', `FALTA_LOC_${i}`, false)
     }
     for(let i = 1; i <= faltasEnEsteCuarto; i++) {
@@ -437,8 +462,8 @@
     let previousFouls = 0
     for(let i = 0; i < numPeriodo; i++) {
       previousFouls += foulsByPeriodAway.value[i]
-
     }
+
     const faltasEnEsteCuarto = parseInt(newVal) - previousFouls
     foulsByPeriodAway.value[numPeriodo] = faltasEnEsteCuarto
     for(let i = faltasEnEsteCuarto + 1; i <= 5; i++) {
@@ -451,6 +476,8 @@
 
   watch(() => periodoTXT.value, (newVal) => {
     period.value = periodos.indexOf(newVal) + 1
+    resetFaltasVisual('LOC')
+    resetFaltasVisual('VIS')
   })
 
 

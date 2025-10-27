@@ -120,8 +120,11 @@ export const useWsDataStore = defineStore('wsData', {
           }
           
           const parsed = safeParseMessage(payload)
+
           
           this.lastMessage = parsed.data.data
+          // console.log(this.lastMessage)
+          // console.log('Mensaje recibido:', parsed)
           
           // Desestructuramos los datos que nos interesan
           if (parsed.data.data.gameClock && this.autoGameClock) { this.gameClock = parsed.data.data.gameClock }

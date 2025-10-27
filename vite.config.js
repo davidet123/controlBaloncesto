@@ -11,7 +11,8 @@ export default defineConfig({
     // vueDevTools(),
   ],
   server: {
-    host: '127.0.0.1',
+    host: true,
+    // host: '127.0.0.1',
     port: 5600,
     strictPort: true
   },
